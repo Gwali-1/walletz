@@ -9,10 +9,11 @@ public class SessionContext : DbContext
 
     public DbSet<User> users { get; set; }
     public DbSet<Wallet> wallets { get; set; }
+    private string dbPath = Path.Combine(Environment.CurrentDirectory, "walletz.db");
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        builder.UseSqlite(@"Data Source=Wallet.db;");
+        builder.UseSqlite(@$"Data Source={dbPath}");
 
     }
 

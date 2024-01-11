@@ -74,7 +74,7 @@ public class WalletRepo : IWalletAction
 
     public ICollection<Wallet> GetWallets(string owner)
     {
-        List<Wallet>  walletitems = _datacontext.wallets.Where(w => w.Owner == owner).ToList();
+        List<Wallet> walletitems = _datacontext.wallets.Where(w => w.Owner == owner).ToList();
         return walletitems;
     }
 }
