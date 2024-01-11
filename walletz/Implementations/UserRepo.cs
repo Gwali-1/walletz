@@ -11,7 +11,7 @@ public class UserRepo : IUserAction
     private readonly ILogger _logger;
     private readonly SessionContext _datacontext;
 
-    public WalletRepo(ILogger<WalletRepo> logger, SessionContext datacontext)
+    public UserRepo(ILogger<WalletRepo> logger, SessionContext datacontext)
     {
         _logger = logger;
         _datacontext = datacontext;
@@ -24,56 +24,50 @@ public class UserRepo : IUserAction
         try
         {
 
-            User UsertItem = new User
+            User userItem = new User
             {
-                PhoneNumber = newUser.PhoneNumber,
+                PhoneNumber = newUser.PhoneNumber.Trim(),
                 Key = "unique key here",
 
             };
 
-            _datacontext.users.Add(walletItem);
+            _datacontext.users.Add(userItem);
             _datacontext.SaveChanges();
 
-            return new UserResponse{}
+            return new UserResponse { PhoneNumber = newUser.PhoneNumber, Key = "uniquew key" };
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            return false;
+            _logger.LogInformation(e.Message);
+            return null;
         }
 
     }
 
-    public bool CreateWallet(WalletRequest newWallet, User owner)
-    {
-        try
-        {
-
-            Wallet walletItem = new Wallet
-            {
-                Id = "hash here",
-                Name = newWallet.Name,
-                AccountNumber = newWallet.AccountNumber,
-                AccountScheme = newWallet.AccountScheme,
-                Owner = owner.PhoneNumber,
-                user = owner
-
-            };
-
-            _datacontext.wallets.Add(walletItem);
-            _datacontext.SaveChanges();
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return false;
-        }
-    }
 
     public bool VerifyUser(string phone, string key)
     {
+        try
+        {
+            User? user = _datacontext.users.Where(u => u.PhoneNumber == phone).FirstOrDefault();
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (user.Key != key.Trim())
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogInformation(e.Message);
+            return false;
+        }
         throw new NotImplementedException();
     }
 }
