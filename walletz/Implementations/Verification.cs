@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using walletz.Interfaces;
 using walletz.MessageObjects;
 using walletz.Models;
@@ -17,6 +19,17 @@ public class Verification : IVerify
     public Verification(ILogger<WalletRepo> logger)
     {
         _logger = logger;
+
+    }
+
+    public string GenerateUniqueid(string accountNumber)
+    {
+        using SHA256 crypt = SHA256.Create();
+
+        byte[] uniqueBytes = Encoding.UTF8.GetBytes(accountNumber);
+        byte[] hashBytes = crypt.ComputeHash(uniqueBytes);
+
+        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 7);
 
     }
 
@@ -59,4 +72,5 @@ public class Verification : IVerify
         return string.Empty;
 
     }
+
 }

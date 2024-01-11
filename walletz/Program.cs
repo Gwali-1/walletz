@@ -1,4 +1,5 @@
 ﻿using walletz.Implementations;
+using walletz.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<SessionContext>();
+
+builder.Services.AddScoped<IUserAction, UserRepo>();
+builder.Services.AddScoped<IWalletAction, WalletRepo>();
+builder.Services.AddSingleton<IVerify, Verification>();
+
 
 var app = builder.Build();
 

@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using walletz.Interfaces;
 using walletz.MessageObjects;
 using walletz.Models;
@@ -10,13 +12,19 @@ public class WalletRepo : IWalletAction
 {
     private readonly ILogger _logger;
     private readonly SessionContext _datacontext;
+    private readonly IVerify _utility;
 
-    public WalletRepo(ILogger<WalletRepo> logger, SessionContext datacontext)
+
+
+    public WalletRepo(ILogger<WalletRepo> logger, SessionContext datacontext, IVerify utility)
     {
         _logger = logger;
         _datacontext = datacontext;
+        _utility = utility;
 
     }
+
+
 
     public bool CreateWallet(WalletRequest newWallet, User owner)
     {
@@ -25,7 +33,7 @@ public class WalletRepo : IWalletAction
 
             Wallet walletItem = new Wallet
             {
-                Id = "hash here",
+                Id = _utility.GenerateUniqueid(newWallet.AccountNumber),
                 Name = newWallet.Name,
                 AccountNumber = newWallet.AccountNumber,
                 AccountScheme = newWallet.AccountScheme,
