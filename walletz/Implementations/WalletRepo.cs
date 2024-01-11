@@ -80,9 +80,57 @@ public class WalletRepo : IWalletAction
         }
     }
 
-    public ICollection<Wallet> GetWallets(string owner)
+    public WalletResponse GetWallet(string walletId)
     {
-        List<Wallet> walletitems = _datacontext.wallets.Where(w => w.Owner == owner).ToList();
+        try
+        {
+
+            WalletResponse? walletItem = _datacontext.wallets.Where(w => w.Id == walletId).Select(w => new WalletResponse
+            {
+                Id = w.Id,
+                Name = w.Name,
+                AccountNumber = w.AccountNumber,
+                AccountScheme = w.AccountScheme,
+                CreatedAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                Owner = w.Owner
+
+            }).FirstOrDefault();
+
+            return walletItem;
+
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogInformation(e.Message);
+            return null;
+
+        }
+
+    }
+
+    public ICollection<WalletResponse> GetWallets(string owner)
+    {
+        List<WalletResponse> walletitems = _datacontext.wallets.Where(w => w.Owner == owner).Select(w => new WalletResponse
+        {
+            Id = w.Id,
+            Name = w.Name,
+            AccountNumber = w.AccountNumber,
+            AccountScheme = w.AccountScheme,
+            CreatedAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            Owner = w.Owner
+
+
+        }).ToList();
         return walletitems;
     }
+
+
+
+    public bool WalletExits(string accountNumber)
+    {
+        string walletId = _utility.GenerateUniqueid(accountNumber);
+        return _datacontext.wallets.Any(w => w.Id == walletId);
+    }
+
 }

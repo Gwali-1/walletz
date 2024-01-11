@@ -11,7 +11,7 @@ public class WalletResponse
 
     public String AccountScheme { get; set; } = string.Empty;
 
-    public DateTime CreatedAt { get; set; }
+    public String CreatedAt { get; set; }
 
     public String Owner { get; set; } = string.Empty;
 

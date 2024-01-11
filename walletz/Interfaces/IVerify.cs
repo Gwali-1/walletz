@@ -9,4 +9,8 @@ public interface IVerify
     public bool verifyPhoneNumber(string phoneNumber);
 
     public string GenerateUniqueid(string accountNumber);
+
+    public string GenerateUniquekey();
+
+
 }

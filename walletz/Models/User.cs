@@ -12,6 +12,8 @@ public class User
 
     public DateTime CreatedAt { get; set; }
 
+    public int ExistingWalletNumber {get; set;}
+
     //wallets
     public ICollection<Wallet> Wallets { get; set; } = new List<Wallet>{};
 
