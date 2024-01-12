@@ -48,7 +48,7 @@ public class Verification : IVerify
     public bool verifyPhoneNumber(string phoneNumber)
     {
 
-        return (phoneNumber.Length == 10 && phoneNumber.StartsWith("0")) | (phoneNumber.Length == 12 && phoneNumber.StartsWith("233"));
+        return (phoneNumber.Length == 10 && phoneNumber.StartsWith("0")) || (phoneNumber.Length == 12 && phoneNumber.StartsWith("233"));
 
         /* return (phoneNumber.Length == 10 | phoneNumber.Length = 12) && (phoneNumber.StartsWith("0") | phoneNumber.StartsWith("233")); */
     }

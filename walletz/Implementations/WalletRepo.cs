@@ -134,7 +134,7 @@ public class WalletRepo : IWalletAction
         string walletId = _utility.GenerateUniqueid(accountNumber);
         bool sameAccountNumber = _datacontext.wallets.Any(w => w.Id == walletId);
         bool sameAccountName = _datacontext.wallets.Any(w => w.Name == name);
-        if (sameAccountName | sameAccountNumber)
+        if (sameAccountName || sameAccountNumber)
         {
             return true;
         }
