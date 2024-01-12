@@ -1,4 +1,4 @@
-using walletz.MessageObjects;
+using walletz.DTOs;
 using walletz.Models;
 
 namespace walletz.Interfaces;
@@ -14,6 +14,8 @@ public interface IUserAction
     public User GetUser(string phonneNumber);
 
     public bool IncreaseUserWalletNumber(string phoneNumber);
+
+    public bool DecreaseUserWalletNumber(string phoneNumber);
 
     public bool validWalletLimit(string phoneNumber);
 

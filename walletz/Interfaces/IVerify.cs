@@ -1,4 +1,4 @@
-using walletz.MessageObjects;
+using walletz.DTOs;
 
 namespace walletz.Interfaces;
 

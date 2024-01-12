@@ -1,8 +1,9 @@
-namespace walletz.MessageObjects;
+namespace walletz.DTOs;
 
 
 public class UserResponse
 {
+    
 
     public String PhoneNumber { get; set; } = string.Empty;
 

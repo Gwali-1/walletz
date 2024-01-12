@@ -1,7 +1,5 @@
-using System.Security.Cryptography;
-using System.Text;
+using walletz.DTOs;
 using walletz.Interfaces;
-using walletz.MessageObjects;
 using walletz.Models;
 
 namespace walletz.Implementations;
@@ -34,6 +32,7 @@ public class WalletRepo : IWalletAction
             Wallet walletItem = new Wallet
             {
                 Id = _utility.GenerateUniqueid(newWallet.AccountNumber),
+                Type = newWallet.Type,
                 Name = newWallet.Name,
                 AccountNumber = newWallet.AccountNumber,
                 AccountScheme = newWallet.AccountScheme,
@@ -49,7 +48,7 @@ public class WalletRepo : IWalletAction
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogInformation(e.Message);
             return false;
         }
     }
@@ -57,7 +56,7 @@ public class WalletRepo : IWalletAction
 
 
 
-    public bool DeleteWallet(string walletId)
+    public Wallet DeleteWallet(string walletId)
     {
         try
         {
@@ -65,17 +64,18 @@ public class WalletRepo : IWalletAction
             Wallet? walletItem = _datacontext.wallets.Where(w => w.Id == walletId).FirstOrDefault();
             if (walletItem == null)
             {
-                return false;
+                return null;
             }
             _datacontext.Remove(walletItem);
-            return true;
+            _datacontext.SaveChanges();
+            return walletItem;
 
 
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            return false;
+            _logger.LogInformation(e.Message);
+            return null;
 
         }
     }
@@ -89,6 +89,7 @@ public class WalletRepo : IWalletAction
             {
                 Id = w.Id,
                 Name = w.Name,
+                Type = w.Type,
                 AccountNumber = w.AccountNumber,
                 AccountScheme = w.AccountScheme,
                 CreatedAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -115,6 +116,7 @@ public class WalletRepo : IWalletAction
         {
             Id = w.Id,
             Name = w.Name,
+            Type = w.Type,
             AccountNumber = w.AccountNumber,
             AccountScheme = w.AccountScheme,
             CreatedAt = w.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -127,10 +129,16 @@ public class WalletRepo : IWalletAction
 
 
 
-    public bool WalletExits(string accountNumber)
+    public bool WalletExits(string accountNumber, string name)
     {
         string walletId = _utility.GenerateUniqueid(accountNumber);
-        return _datacontext.wallets.Any(w => w.Id == walletId);
+        bool sameAccountNumber = _datacontext.wallets.Any(w => w.Id == walletId);
+        bool sameAccountName = _datacontext.wallets.Any(w => w.Name == name);
+        if (sameAccountName | sameAccountNumber)
+        {
+            return true;
+        }
+        return false;
     }
 
 }

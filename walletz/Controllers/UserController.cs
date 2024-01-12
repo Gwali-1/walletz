@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using walletz.MessageObjects;
+using walletz.DTOs;
 using walletz.Interfaces;
 
 namespace walletz.Controllers;
@@ -23,7 +23,6 @@ public class UserController : ControllerBase
     private string transformPhone(string phone)
     {
         string formatted = "233" + phone.Substring(1, phone.Length - 1);
-        _logger.LogInformation($"This is the formatted to 2333 --> {formatted}");
         return formatted;
     }
 

@@ -1,5 +1,5 @@
 using walletz.Interfaces;
-using walletz.MessageObjects;
+using walletz.DTOs;
 using walletz.Models;
 
 namespace walletz.Implementations;
@@ -65,6 +65,20 @@ public class UserRepo : IUserAction
         }
 
         user.ExistingWalletNumber += 1;
+        _datacontext.SaveChanges();
+        return true;
+
+    }
+
+    public bool DecreaseUserWalletNumber(string phoneNumber)
+    {
+        User? user = _datacontext.users.Where(u => u.PhoneNumber == phoneNumber).FirstOrDefault();
+        if (user == null)
+        {
+            return false;
+        }
+
+        user.ExistingWalletNumber -= 1;
         _datacontext.SaveChanges();
         return true;
 

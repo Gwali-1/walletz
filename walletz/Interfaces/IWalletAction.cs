@@ -1,4 +1,4 @@
-using walletz.MessageObjects;
+using walletz.DTOs;
 using walletz.Models;
 
 namespace walletz.Interfaces;
@@ -11,9 +11,9 @@ public interface IWalletAction
 
     public WalletResponse GetWallet(string walletId);
 
-    public bool DeleteWallet(string walletId);
+    public Wallet DeleteWallet(string walletId);
 
-    public bool WalletExits(string accountNumber);
+    public bool WalletExits(string accountNumber, string name);
 
 
 }

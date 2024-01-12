@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
+using walletz.DTOs;
 using walletz.Interfaces;
-using walletz.MessageObjects;
 
 namespace walletz.Implementations;
 
@@ -28,7 +28,7 @@ public class Verification : IVerify
         byte[] uniqueBytes = Encoding.UTF8.GetBytes(accountNumber);
         byte[] hashBytes = crypt.ComputeHash(uniqueBytes);
 
-        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 7);
+        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 11);
 
     }
 

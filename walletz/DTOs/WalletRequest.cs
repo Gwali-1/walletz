@@ -1,4 +1,4 @@
-namespace walletz.MessageObjects;
+namespace walletz.DTOs;
 
 public class WalletRequest
 {
