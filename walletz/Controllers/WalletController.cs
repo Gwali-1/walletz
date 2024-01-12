@@ -87,13 +87,12 @@ public class WalletController : ControllerBase
 
         User user = _userDb.GetUser(phone.Trim());
 
-        //if its a card
         if (newWallet.Type.Trim().ToUpper() == "CARD")
         {
-
             newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16);
 
         }
+
 
 
 
@@ -174,7 +173,7 @@ public class WalletController : ControllerBase
         Wallet walletDeleted = _walletdb.DeleteWallet(walletId);
         if (walletDeleted == null)
         {
-            return StatusCode(500, "wallet could not be deleted");
+            return BadRequest("Wallet does not exist");
         }
 
         //decrease wallet number 

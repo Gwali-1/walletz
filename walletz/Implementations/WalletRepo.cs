@@ -32,8 +32,8 @@ public class WalletRepo : IWalletAction
             Wallet walletItem = new Wallet
             {
                 Id = _utility.GenerateUniqueid(newWallet.AccountNumber),
-                Type = newWallet.Type,
-                Name = newWallet.Name,
+                Type = newWallet.Type.Trim(),
+                Name = newWallet.Name.Trim(),
                 AccountNumber = newWallet.AccountNumber,
                 AccountScheme = newWallet.AccountScheme,
                 Owner = owner.PhoneNumber,
@@ -48,6 +48,7 @@ public class WalletRepo : IWalletAction
         }
         catch (Exception e)
         {
+            Console.WriteLine(e);
             _logger.LogInformation(e.Message);
             return false;
         }

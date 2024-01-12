@@ -28,7 +28,7 @@ public class Verification : IVerify
         byte[] uniqueBytes = Encoding.UTF8.GetBytes(accountNumber);
         byte[] hashBytes = crypt.ComputeHash(uniqueBytes);
 
-        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 11);
+        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 16);
 
     }
 
@@ -79,6 +79,12 @@ public class Verification : IVerify
             if (!allowedCardSchemes.Contains(InputSchemaType))
             {
                 return "Invalid acccount scheme for chosen wallet type | allowed are visa or  mastercard";
+            }
+
+            if (newWallet.AccountNumber.Length < 6)
+            {
+
+                return "Card number can't be less than 6";
             }
 
         }
