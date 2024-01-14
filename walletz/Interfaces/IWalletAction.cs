@@ -13,7 +13,7 @@ public interface IWalletAction
 
     public Wallet DeleteWallet(string walletId);
 
-    public bool WalletExits(string accountNumber, string name);
+    public bool WalletExits(string accountNumber, string name, string owner);
 
 
 }

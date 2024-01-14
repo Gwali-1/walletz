@@ -4,13 +4,17 @@ namespace walletz.Interfaces;
 
 public interface IVerify
 {
-    public string veryAccountType(WalletRequest newwallet);
+    public string VeryAccountType(WalletRequest newwallet);
 
-    public bool verifyPhoneNumber(string phoneNumber);
+    public bool VerifyPhoneNumber(string phoneNumber);
 
     public string GenerateUniqueid(string accountNumber);
 
     public string GenerateUniquekey();
+
+    public bool ValidWalletLimit(string phoneNumber);
+
+    public bool VerifyUser(string phone, string key);
 
 
 }

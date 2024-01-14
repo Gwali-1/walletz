@@ -130,12 +130,12 @@ public class WalletRepo : IWalletAction
 
 
 
-    public bool WalletExits(string accountNumber, string name)
+    public bool WalletExits(string accountNumber, string name, string owner)
     {
         string walletId = _utility.GenerateUniqueid(accountNumber);
-        bool sameAccountNumber = _datacontext.wallets.Any(w => w.Id == walletId);
-        bool sameAccountName = _datacontext.wallets.Any(w => w.Name == name);
-        if (sameAccountName || sameAccountNumber)
+        bool exits = _datacontext.wallets.Any(w => w.Id == walletId && w.Name == name && w.Owner == owner);
+
+        if (exits)
         {
             return true;
         }

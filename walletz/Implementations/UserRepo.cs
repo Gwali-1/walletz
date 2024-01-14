@@ -84,45 +84,9 @@ public class UserRepo : IUserAction
 
     }
 
-    public bool userExist(string phoneNumber)
+    public bool UserExist(string phoneNumber)
     {
         return _datacontext.users.Any(u => u.PhoneNumber == phoneNumber);
     }
 
-    public bool validWalletLimit(string phoneNumber)
-    {
-        User? user = _datacontext.users.Where(u => u.PhoneNumber == phoneNumber).FirstOrDefault();
-        if (user == null)
-        {
-            return false;
-        }
-
-        return user.ExistingWalletNumber < 5;
-    }
-
-    public bool VerifyUser(string phone, string key)
-    {
-        try
-        {
-            User? user = _datacontext.users.Where(u => u.PhoneNumber == phone).FirstOrDefault();
-            if (user == null)
-            {
-                return false;
-            }
-
-            if (user.Key != key.Trim())
-            {
-                return false;
-            }
-
-            return true;
-
-        }
-        catch (Exception e)
-        {
-            _logger.LogInformation(e.Message);
-            return false;
-        }
-        throw new NotImplementedException();
-    }
 }

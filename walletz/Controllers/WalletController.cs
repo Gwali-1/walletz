@@ -11,19 +11,19 @@ public class WalletController : ControllerBase
 {
 
     private readonly ILogger _logger;
-    private readonly IWalletAction _walletdb;
+    private readonly IWalletAction _walletDb;
     private readonly IUserAction _userDb;
     private readonly IVerify _verifier;
     public WalletController(ILogger<UserController> logger, IWalletAction db, IVerify verifier, IUserAction userDb)
     {
         _logger = logger;
-        _walletdb = db;
+        _walletDb = db;
         _verifier = verifier;
         _userDb = userDb;
     }
 
 
-    private string transformPhone(string phone)
+    private string TransformPhone(string phone)
     {
         if (phone.StartsWith("233") && phone.Length == 12)
         {
@@ -39,15 +39,15 @@ public class WalletController : ControllerBase
     {
         //make sure wallet number is not more than 5;
 
-        phone = transformPhone(phone);
+        phone = TransformPhone(phone);
 
-        bool validUser = _userDb.VerifyUser(phone, key);
+        bool validUser = _verifier.VerifyUser(phone, key);
         if (!validUser)
         {
             return BadRequest("Invalid auth details");
         }
 
-        bool validWalletNumber = _userDb.validWalletLimit(phone);
+        bool validWalletNumber = _verifier.ValidWalletLimit(phone);
 
         if (!validWalletNumber)
         {
@@ -55,7 +55,7 @@ public class WalletController : ControllerBase
         }
 
 
-        string result = _verifier.veryAccountType(newWallet);
+        string result = _verifier.VeryAccountType(newWallet);
 
         if (result != string.Empty)
         {
@@ -65,7 +65,7 @@ public class WalletController : ControllerBase
         //if its momo
         if (newWallet.Type.Trim().ToUpper() == "MOMO")
         {
-            bool validNumber = _verifier.verifyPhoneNumber(newWallet.AccountNumber);
+            bool validNumber = _verifier.VerifyPhoneNumber(newWallet.AccountNumber);
 
             if (!validNumber)
             {
@@ -73,12 +73,12 @@ public class WalletController : ControllerBase
             }
 
 
-            newWallet.AccountNumber = transformPhone(newWallet.AccountNumber.Trim());
+            newWallet.AccountNumber = TransformPhone(newWallet.AccountNumber.Trim());
 
         }
 
 
-        bool walletExist = _walletdb.WalletExits(newWallet.AccountNumber.Trim(), newWallet.Name.Trim());
+        bool walletExist = _walletDb.WalletExits(newWallet.AccountNumber.Trim(), newWallet.Name.Trim(), phone);
         if (walletExist)
         {
             return BadRequest("Wallet already exists");
@@ -93,18 +93,13 @@ public class WalletController : ControllerBase
 
         }
 
-
-
-
-
-        bool walletCreated = _walletdb.CreateWallet(newWallet, user);
+        bool walletCreated = _walletDb.CreateWallet(newWallet, user);
         if (!walletCreated)
         {
             return StatusCode(500, "Could not add wallet");
         }
 
         _userDb.IncreaseUserWalletNumber(phone);
-
 
 
         return Ok("wallet added");
@@ -118,13 +113,13 @@ public class WalletController : ControllerBase
         phone = phone.Trim();
         key = key.Trim();
 
-        bool user = _userDb.VerifyUser(transformPhone(phone), key);
+        bool user = _verifier.VerifyUser(TransformPhone(phone), key);
         if (!user)
         {
             return BadRequest("Invalid auth details");
         }
 
-        ICollection<WalletResponse> userWallets = _walletdb.GetWallets(transformPhone(phone));
+        ICollection<WalletResponse> userWallets = _walletDb.GetWallets(TransformPhone(phone));
         return Ok(userWallets);
 
 
@@ -139,13 +134,13 @@ public class WalletController : ControllerBase
         key = key.Trim();
 
 
-        bool user = _userDb.VerifyUser(transformPhone(phone), key);
+        bool user = _verifier.VerifyUser(TransformPhone(phone), key);
         if (!user)
         {
             return BadRequest("Invalid auth details");
         }
 
-        WalletResponse walletItem = _walletdb.GetWallet(walletId);
+        WalletResponse walletItem = _walletDb.GetWallet(walletId);
         if (walletItem == null)
         {
             return NotFound("wallet does not exist");
@@ -163,37 +158,28 @@ public class WalletController : ControllerBase
         phone = phone.Trim();
         key = key.Trim();
 
+        string format233 = TransformPhone(phone);
 
-        bool user = _userDb.VerifyUser(transformPhone(phone), key);
+
+        bool user = _verifier.VerifyUser(format233, key);
         if (!user)
         {
             return BadRequest("Invalid auth details");
         }
 
-        Wallet walletDeleted = _walletdb.DeleteWallet(walletId);
+        Wallet walletDeleted = _walletDb.DeleteWallet(walletId);
         if (walletDeleted == null)
         {
             return BadRequest("Wallet does not exist");
         }
 
         //decrease wallet number 
-        _userDb.DecreaseUserWalletNumber(transformPhone(phone));
+        _userDb.DecreaseUserWalletNumber(format233);
 
         return Ok($"Wallet with id {walletDeleted.Id} Removed");
 
 
-
-
-
-
-
     }
-
-
-
-
-
-
 
 }
 

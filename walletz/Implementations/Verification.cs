@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using walletz.DTOs;
 using walletz.Interfaces;
+using walletz.Models;
 
 namespace walletz.Implementations;
 
@@ -10,14 +11,15 @@ namespace walletz.Implementations;
 public class Verification : IVerify
 {
     private readonly ILogger _logger;
-
+    private readonly SessionContext _datacontext;
     private List<string> allowedTypes = new List<string> { "MOMO", "CARD" };
     private List<string> allowedMomoSchemes = new List<string> { "MTN", "VODAFONE", "AIRTELTIGO" };
     private List<string> allowedCardSchemes = new List<string> { "VISA", "MASTERCARD" };
 
-    public Verification(ILogger<WalletRepo> logger)
+    public Verification(ILogger<WalletRepo> logger, SessionContext datacontext)
     {
         _logger = logger;
+        _datacontext = datacontext;
 
     }
 
@@ -28,24 +30,26 @@ public class Verification : IVerify
         byte[] uniqueBytes = Encoding.UTF8.GetBytes(accountNumber);
         byte[] hashBytes = crypt.ComputeHash(uniqueBytes);
 
-        return BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 16);
-
-    }
-
-    public string GenerateUniquekey()
-    {
-
-        Guid uniqueId = Guid.NewGuid();
-        using SHA256 crypt = SHA256.Create();
-
-        byte[] uniqueBytes = uniqueId.ToByteArray();
-        byte[] hashBytes = crypt.ComputeHash(uniqueBytes);
         return BitConverter.ToString(hashBytes).Replace("-", "");
 
     }
 
+    public string GenerateUniquekey()  // return only uuid without hashing?
+    {
 
-    public bool verifyPhoneNumber(string phoneNumber)
+        Guid uniqueId = Guid.NewGuid();
+
+        return uniqueId.ToString("N");
+        /* using SHA256 crypt = SHA256.Create(); */
+        /**/
+        /* byte[] uniqueBytes = uniqueId.ToByteArray(); */
+        /* byte[] hashBytes = crypt.ComputeHash(uniqueBytes); */
+        /* return BitConverter.ToString(hashBytes).Replace("-", ""); */
+        /**/
+    }
+
+
+    public bool VerifyPhoneNumber(string phoneNumber)
     {
 
         return (phoneNumber.Length == 10 && phoneNumber.StartsWith("0")) || (phoneNumber.Length == 12 && phoneNumber.StartsWith("233"));
@@ -53,7 +57,7 @@ public class Verification : IVerify
         /* return (phoneNumber.Length == 10 | phoneNumber.Length = 12) && (phoneNumber.StartsWith("0") | phoneNumber.StartsWith("233")); */
     }
 
-    public string veryAccountType(WalletRequest newWallet)
+    public string VeryAccountType(WalletRequest newWallet)
     {
         String InputWalletType = newWallet.Type.Trim().ToUpper();
         String InputSchemaType = newWallet.AccountScheme.Trim().ToUpper();
@@ -81,10 +85,10 @@ public class Verification : IVerify
                 return "Invalid acccount scheme for chosen wallet type | allowed are visa or  mastercard";
             }
 
-            if (newWallet.AccountNumber.Length < 6)
+            if (newWallet.AccountNumber.Length < 16)
             {
 
-                return "Card number can't be less than 6";
+                return "Card number can't be less than 16";
             }
 
         }
@@ -92,5 +96,43 @@ public class Verification : IVerify
         return string.Empty;
 
     }
+
+
+    public bool ValidWalletLimit(string phoneNumber)
+    {
+        User? user = _datacontext.users.Where(u => u.PhoneNumber == phoneNumber).FirstOrDefault();
+        if (user == null)
+        {
+            return false;
+        }
+
+        return user.ExistingWalletNumber < 5;
+    }
+
+    public bool VerifyUser(string phone, string key)
+    {
+        try
+        {
+            User? user = _datacontext.users.Where(u => u.PhoneNumber == phone).FirstOrDefault();
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (user.Key != key.Trim())
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogInformation(e.Message);
+            return false;
+        }
+    }
+
 
 }

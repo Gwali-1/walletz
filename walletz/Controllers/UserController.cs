@@ -10,17 +10,17 @@ public class UserController : ControllerBase
 {
 
     private readonly ILogger _logger;
-    private readonly IUserAction _db;
+    private readonly IUserAction _userDb;
     private readonly IVerify _verifier;
     public UserController(ILogger<UserController> logger, IUserAction db, IVerify verifier)
     {
         _logger = logger;
-        _db = db;
+        _userDb = db;
         _verifier = verifier;
     }
 
 
-    private string transformPhone(string phone)
+    private string TransformPhone(string phone)
     {
         string formatted = "233" + phone.Substring(1, phone.Length - 1);
         return formatted;
@@ -32,15 +32,15 @@ public class UserController : ControllerBase
     {
         //transform number to 233 fromat
 
-        bool validPhoneNumber = _verifier.verifyPhoneNumber(newUser.PhoneNumber);
+        bool validPhoneNumber = _verifier.VerifyPhoneNumber(newUser.PhoneNumber);
         if (!validPhoneNumber)
         {
             return BadRequest("Invalid Phone number");
         }
 
-        string format233 = transformPhone(newUser.PhoneNumber);
+        string format233 = TransformPhone(newUser.PhoneNumber);
 
-        bool userExist = _db.userExist(format233);
+        bool userExist = _userDb.UserExist(format233);
 
         if (userExist)
         {
@@ -49,7 +49,7 @@ public class UserController : ControllerBase
 
 
         newUser.PhoneNumber = format233;
-        UserResponse createdUser = _db.CreateUser(newUser);
+        UserResponse createdUser = _userDb.CreateUser(newUser);
         if (createdUser == null)
         {
             return StatusCode(500, "New user could not be created");

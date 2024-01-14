@@ -14,7 +14,7 @@ builder.Services.AddDbContext<SessionContext>();
 
 builder.Services.AddScoped<IUserAction, UserRepo>();
 builder.Services.AddScoped<IWalletAction, WalletRepo>();
-builder.Services.AddSingleton<IVerify, Verification>();
+builder.Services.AddScoped<IVerify, Verification>();  
 
 
 var app = builder.Build();
