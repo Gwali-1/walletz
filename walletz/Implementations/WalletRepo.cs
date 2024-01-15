@@ -22,16 +22,21 @@ public class WalletRepo : IWalletAction
 
     }
 
-
-
     public bool CreateWallet(WalletRequest newWallet, User owner)
     {
         try
         {
+            string walletId = _utility.GenerateUniqueid(newWallet.AccountNumber + owner.PhoneNumber);
+
+            if (newWallet.Type.Trim().ToUpper() == "CARD")
+            {
+                newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16);
+
+            }
 
             Wallet walletItem = new Wallet
             {
-                Id = _utility.GenerateUniqueid(newWallet.AccountNumber),
+                Id = walletId,
                 Type = newWallet.Type.Trim(),
                 Name = newWallet.Name.Trim(),
                 AccountNumber = newWallet.AccountNumber,
@@ -53,8 +58,6 @@ public class WalletRepo : IWalletAction
             return false;
         }
     }
-
-
 
 
     public Wallet DeleteWallet(string walletId)
@@ -132,10 +135,15 @@ public class WalletRepo : IWalletAction
 
     public bool WalletExits(string accountNumber, string name, string owner)
     {
-        string walletId = _utility.GenerateUniqueid(accountNumber);
-        bool exits = _datacontext.wallets.Any(w => w.Id == walletId && w.Name == name && w.Owner == owner);
 
-        if (exits)
+        bool walletNameExits = _datacontext.wallets.Any(w => w.Name == name && w.Owner == owner);
+        if (walletNameExits)
+        {
+            return true;
+        }
+        string walletId = _utility.GenerateUniqueid(accountNumber + owner);
+        bool walletAccountNumberExits = _datacontext.wallets.Any(w => w.Id == walletId);
+        if (walletAccountNumberExits)
         {
             return true;
         }

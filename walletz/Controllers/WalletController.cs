@@ -78,21 +78,20 @@ public class WalletController : ControllerBase
         }
 
 
-        bool walletExist = _walletDb.WalletExits(newWallet.AccountNumber.Trim(), newWallet.Name.Trim(), phone);
+        bool walletExist = _walletDb.WalletExits(newWallet.AccountNumber.Trim(), newWallet.Name.Trim(), phone.Trim());
         if (walletExist)
         {
             return BadRequest("Wallet already exists");
         }
 
-
         User user = _userDb.GetUser(phone.Trim());
-
-        if (newWallet.Type.Trim().ToUpper() == "CARD")
-        {
-            newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16);
-
-        }
-
+        /**/
+        /* if (newWallet.Type.Trim().ToUpper() == "CARD") */
+        /* { */
+        /*     newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16); */
+        /**/
+        /* } */
+        /**/
         bool walletCreated = _walletDb.CreateWallet(newWallet, user);
         if (!walletCreated)
         {
@@ -140,7 +139,7 @@ public class WalletController : ControllerBase
             return BadRequest("Invalid auth details");
         }
 
-        WalletResponse walletItem = _walletDb.GetWallet(walletId);
+        WalletResponse walletItem = _walletDb.GetWallet(walletId.Trim());
         if (walletItem == null)
         {
             return NotFound("wallet does not exist");
@@ -167,7 +166,7 @@ public class WalletController : ControllerBase
             return BadRequest("Invalid auth details");
         }
 
-        Wallet walletDeleted = _walletDb.DeleteWallet(walletId);
+        Wallet walletDeleted = _walletDb.DeleteWallet(walletId.Trim());
         if (walletDeleted == null)
         {
             return BadRequest("Wallet does not exist");
