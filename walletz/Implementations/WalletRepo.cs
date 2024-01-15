@@ -28,6 +28,7 @@ public class WalletRepo : IWalletAction
         {
             string walletId = _utility.GenerateUniqueid(newWallet.AccountNumber + owner.PhoneNumber);
 
+            //if its card
             if (newWallet.Type.Trim().ToUpper() == "CARD")
             {
                 newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16);

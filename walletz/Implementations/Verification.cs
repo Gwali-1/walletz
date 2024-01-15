@@ -38,14 +38,8 @@ public class Verification : IVerify
     {
 
         Guid uniqueId = Guid.NewGuid();
-
         return uniqueId.ToString("N");
-        /* using SHA256 crypt = SHA256.Create(); */
-        /**/
-        /* byte[] uniqueBytes = uniqueId.ToByteArray(); */
-        /* byte[] hashBytes = crypt.ComputeHash(uniqueBytes); */
-        /* return BitConverter.ToString(hashBytes).Replace("-", ""); */
-        /**/
+        
     }
 
 

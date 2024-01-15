@@ -85,20 +85,18 @@ public class WalletController : ControllerBase
         }
 
         User user = _userDb.GetUser(phone.Trim());
-        /**/
-        /* if (newWallet.Type.Trim().ToUpper() == "CARD") */
-        /* { */
-        /*     newWallet.AccountNumber = newWallet.AccountNumber.Trim().Substring(0, 6) + new string('*', 16); */
-        /**/
-        /* } */
-        /**/
+  
         bool walletCreated = _walletDb.CreateWallet(newWallet, user);
         if (!walletCreated)
         {
             return StatusCode(500, "Could not add wallet");
         }
 
-        _userDb.IncreaseUserWalletNumber(phone);
+        bool increased = _userDb.IncreaseUserWalletNumber(phone);
+        if (!increased)
+        {
+            _logger.LogInformation("user wallet number could not be increased");
+        }
 
 
         return Ok("wallet added");
@@ -173,7 +171,11 @@ public class WalletController : ControllerBase
         }
 
         //decrease wallet number 
-        _userDb.DecreaseUserWalletNumber(format233);
+        bool decreased = _userDb.DecreaseUserWalletNumber(format233);
+        if (!decreased )
+        {
+            _logger.LogInformation("user wallet number could not be decreased");
+        }
 
         return Ok($"Wallet with id {walletDeleted.Id} Removed");
 
